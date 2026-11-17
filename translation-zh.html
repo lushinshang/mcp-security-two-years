@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230f7b6c%27/%3E%3Cpath d=%27M12 46 26 30l8 8 18-22%27 stroke=%27white%27 stroke-width=%277%27 fill=%27none%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<title>MCP Security, Two Years In（非官方繁中譯文）</title>
+<meta name="description" content="〈MCP Security, Two Years In〉（Den Delimarsky，Anthropic）全文繁體中文譯本，採台灣用語；非官方翻譯（AI 模型翻譯與審校），依 YouTube 機器字幕。">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="MCP Security, Two Years In（非官方繁中譯文）">
+<meta property="og:description" content="〈MCP Security, Two Years In〉（Den Delimarsky，Anthropic）全文繁體中文譯本，採台灣用語；非官方翻譯（AI 模型翻譯與審校），依 YouTube 機器字幕。">
+<meta property="og:image" content="https://lushinshang.github.io/mcp-security-two-years/images/og-hero.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="原創 AI 插畫：桌上發亮的綠色同意按鈕沒有人按，一列配戴空白識別證的方塊小角色穿過敞開的門。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MCP Security, Two Years In（非官方繁中譯文）">
+<meta name="twitter:description" content="〈MCP Security, Two Years In〉（Den Delimarsky，Anthropic）全文繁體中文譯本，採台灣用語；非官方翻譯（AI 模型翻譯與審校），依 YouTube 機器字幕。">
+<meta name="twitter:image" content="https://lushinshang.github.io/mcp-security-two-years/images/og-hero.jpg">
+<meta property="og:url" content="https://lushinshang.github.io/mcp-security-two-years/translation-zh.html">
+<style>
+:root{
+  --bg:#f9f7f4; --surface:#fffdf9; --ink:#1a1a1a; --muted:#5f5b54; --line:#e4dfd6;
+  --accent:#0f7b6c; --accent-ink:#0b5c51; --note:#f0ebe1; --code:#ece6d8; --link:#1f5f99;
+  --card:#fff6e8; --card-line:#e8c99a; --shadow:0 6px 24px rgba(40,30,10,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1b1a18; --surface:#26241f; --ink:#ece8de; --muted:#aaa497; --line:#3a3730;
+    --accent:#4fc1ad; --accent-ink:#7fd6c6; --note:#2f2c25; --code:#33302a; --link:#8fbde8;
+    --card:#2d2820; --card-line:#5b4a30; --shadow:0 6px 24px rgba(0,0,0,.35);}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);overflow-x:hidden;
+  font:17px/1.7 "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;letter-spacing:0}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:#fff;padding:8px 14px;z-index:300}
+.skip:focus{left:8px;top:8px}
+nav.toc{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.toc ul{list-style:none;margin:0 auto;padding:0 16px;max-width:1120px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  white-space:nowrap;-webkit-overflow-scrolling:touch;min-height:52px;align-items:center}
+nav.toc ul::-webkit-scrollbar{display:none}
+nav.toc a{display:inline-block;padding:8px 12px;border-radius:999px;color:var(--muted);text-decoration:none;font-size:14px;min-height:36px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--note);color:var(--ink)}
+a{color:var(--link);overflow-wrap:anywhere}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.page{max-width:1120px;margin:0 auto;padding:0 20px 80px}
+header.hero{padding:56px 0 8px;text-align:center}
+.eyebrow{margin:0 0 8px;color:var(--accent-ink);font-weight:700;letter-spacing:0;font-size:14px}
+h1{margin:0 auto 14px;max-width:820px;font-size:clamp(1.7rem,1.2rem + 2vw,2.6rem);line-height:1.3;text-wrap:balance}
+.byline{margin:0 0 6px;color:var(--muted);font-size:14px}
+.video-link{margin:0 0 28px;font-size:14px}
+figure{margin:32px 0}
+figure img{display:block;width:100%;height:auto;aspect-ratio:var(--ar-d,16/9);object-fit:contain;border-radius:12px;
+  box-shadow:var(--shadow);background:var(--surface);cursor:zoom-in}
+@media (max-width:640px){figure picture img{aspect-ratio:var(--ar-m,9/16)}}
+@media (max-width:640px){figure.hero-figure picture img{max-width:300px;margin:0 auto}}
+figure.hero-figure{max-width:720px;margin-left:auto;margin-right:auto}
+hr{border:0;border-top:1px solid var(--line);margin:40px 0}
+p.figcap{margin:-18px auto 1.4em;text-align:center;font-size:14px;color:var(--muted)}
+figcaption{margin:10px auto 0;max-width:720px;font-size:14px;line-height:1.55;color:var(--muted);text-align:center}
+article{max-width:720px;margin:0 auto}
+article figure.section-figure{margin-left:50%;transform:translateX(-50%);width:min(860px,calc(100vw - 32px))}
+h2{margin:56px 0 12px;font-size:1.55rem;line-height:1.4;scroll-margin-top:72px;text-wrap:balance;
+  border-left:5px solid var(--accent);padding-left:14px;margin-left:-19px}
+h3{margin:36px 0 8px;font-size:1.2rem;line-height:1.45}
+p{margin:0 0 1.1em}
+ul,ol{margin:0 0 1.2em;padding-left:1.4em}
+li{margin:.35em 0}
+strong{font-weight:700}
+code{background:var(--code);padding:.1em .4em;border-radius:5px;font:0.9em ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-word}
+section.summary-card{background:var(--card);border:1px solid var(--card-line);border-radius:14px;padding:6px 22px 10px;margin:24px 0 8px;box-shadow:var(--shadow)}
+section.summary-card h2{margin:14px 0 8px;font-size:1.2rem;border-left:0;padding-left:0;margin-left:0}
+section.summary-card p{margin:0 0 .8em;font-size:16.5px}
+ol.takeaways{padding-left:1.6em}
+ol.takeaways li{margin:.8em 0;padding-left:.2em}
+ol.takeaways li::marker{color:var(--accent-ink);font-weight:700}
+ul.sources li{overflow-wrap:anywhere}
+aside.note{background:var(--note);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:0 0 1.6em;font-size:15px;color:var(--ink)}
+aside.note p,aside.note ul{margin:0 0 .6em}
+aside.note ul{padding-left:1.3em}
+figure.diagram{margin:28px 0}
+.mermaid-scroll{overflow-x:auto;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;-webkit-overflow-scrolling:touch}
+.mermaid-scroll pre{margin:0;font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;color:var(--ink)}
+.mermaid-scroll svg{display:block;margin:0 auto;height:auto;max-width:100%}
+.table-scroll{overflow-x:auto;margin:0 0 1.6em;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.table-scroll table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px;line-height:1.55}
+.table-scroll th,.table-scroll td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.table-scroll th{background:var(--note);font-weight:700}
+.table-scroll tr:last-child td{border-bottom:0}
+.table-scroll td.k{font-weight:600;white-space:nowrap}
+.table-scroll td.nw{white-space:nowrap}
+.table-scroll.wide{margin-left:50%;transform:translateX(-50%);width:min(1040px,calc(100vw - 32px))}
+@media (max-width:640px){.table-scroll.wide{margin-left:0;transform:none;width:auto}}
+@media (max-width:640px){
+  .table-scroll{overflow-x:visible}
+  .table-scroll table{min-width:0}
+  .table-scroll thead{position:absolute;left:-9999px}
+  .table-scroll tr,.table-scroll td{display:block}
+  .table-scroll tr{padding:10px 12px;border-bottom:1px solid var(--line)}
+  .table-scroll tr:last-child{border-bottom:0}
+  .table-scroll td{padding:2px 0;border:0}
+  .table-scroll td.k{color:var(--accent-ink);white-space:normal}
+  .table-scroll td.nw{white-space:normal}
+  .table-scroll td::before{content:attr(data-label) "：";font-weight:700;color:var(--muted);font-size:13px}
+}
+
+p.lede{margin:0 auto 10px;max-width:760px;color:var(--muted);font-size:16px;line-height:1.65}
+footer{max-width:720px;margin:64px auto 0;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.lightbox{display:none;position:fixed;inset:0;z-index:200;background:rgba(20,18,14,.9);align-items:center;justify-content:center;padding:24px}
+.lightbox.is-open{display:flex}
+.lightbox img{max-width:96vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 48px rgba(0,0,0,.5);background:#fff}
+.lightbox button{position:absolute;top:14px;right:14px;min-width:44px;min-height:44px;padding:8px 14px;border:0;border-radius:999px;
+  background:#fff;color:#222;font-size:15px;cursor:pointer}
+@media (max-width:760px){
+  h2{margin-left:0;border-left:0;padding-left:0;border-top:3px solid var(--accent);padding-top:10px}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .page{padding:0 16px 64px}
+  header.hero{padding-top:36px}
+  h2{font-size:1.35rem}
+  section.summary-card{padding:4px 16px 8px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<nav class="toc" aria-label="章節導覽"><ul><li><a href="#sec-1" title="章節 1：開場：為什麼 MCP 安全很重要（00:00）">章節 1：開場：為什麼 MCP 安全很重要</a></li><li><a href="#sec-2" title="章節 2：三大支柱：規格、SDK、最佳實務（00:40）">章節 2：三大支柱：規格、SDK、最佳實務</a></li><li><a href="#sec-3" title="章節 3：早期 MCP 為何把授權交給各開發者（01:23）">章節 3：早期 MCP 為何把授權交給各開發者</a></li><li><a href="#sec-4" title="章節 4：MCP 為何對安全有主見（03:14）">章節 4：MCP 為何對安全有主見</a></li><li><a href="#sec-5" title="章節 5：讓對的事容易、錯的事困難（05:45）">章節 5：讓對的事容易、錯的事困難</a></li><li><a href="#sec-6" title="章節 6：規模：SDK 與參考伺服器下載達數十億（07:38）">章節 6：規模：SDK 與參考伺服器下載達數十億</a></li><li><a href="#sec-7" title="章節 7：SDK 安全與協調式漏洞揭露（09:02）">章節 7：SDK 安全與協調式漏洞揭露</a></li><li><a href="#sec-8" title="章節 8：安全最佳實務：同意、token 處理與驗證（10:39）">章節 8：安全最佳實務：同意、token 處理與驗證</a></li><li><a href="#sec-9" title="章節 9：實際部署的教訓（12:03）">章節 9：實際部署的教訓</a></li><li><a href="#sec-10" title="章節 10：一致性測試：SDK 的契約（13:10）">章節 10：一致性測試：SDK 的契約</a></li><li><a href="#sec-11" title="章節 11：面對 agent，同意機制為何得改變（15:52）">章節 11：面對 agent，同意機制為何得改變</a></li><li><a href="#sec-12" title="章節 12：企業託管授權（17:00）">章節 12：企業託管授權</a></li><li><a href="#sec-13" title="章節 13：DPoP：把 token 綁定到裝置（18:21）">章節 13：DPoP：把 token 綁定到裝置</a></li><li><a href="#sec-14" title="章節 14：工作負載身分聯邦（19:16）">章節 14：工作負載身分聯邦</a></li><li><a href="#sec-15" title="章節 15：工作負載授權授予與 agent 身分（20:25）">章節 15：工作負載授權授予與 agent 身分</a></li><li><a href="#sec-16" title="章節 16：從人在迴圈中到 agent（22:07）">章節 16：從人在迴圈中到 agent</a></li><li><a href="#sec-17" title="章節 17：社群、Discord 與漏洞回報（22:42）">章節 17：社群、Discord 與漏洞回報</a></li></ul></nav>
+<div class="page">
+<header class="hero">
+<p class="eyebrow">全文譯本（非官方）</p>
+<h1>MCP Security, Two Years In（非官方繁中譯文）</h1>
+<p class="lede">Den Delimarsky（Anthropic）演講全文譯本</p>
+<p class="byline">原文：Den Delimarsky 演講（影片上傳 2026-11-16）　譯本整理：2026-11-17</p>
+</header>
+<main id="main"><article>
+<aside class="note"><p>這是〈MCP Security, Two Years In - Den Delimarsky, Anthropic〉的繁體中文譯文，依影片字幕翻譯，不是官方翻譯。時間戳為影片時間。</p></aside>
+<ul><li>影片：<a href="https://www.youtube.com/watch?v=b0v2zCLOdcM" target="_blank" rel="noopener noreferrer">MCP Security, Two Years In - Den Delimarsky, Anthropic</a>（Agentic AI Foundation）</li></ul>
+<hr>
+<h2 id="sec-1">章節 1：開場：為什麼 MCP 安全很重要（00:00）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=0s" target="_blank" rel="noopener noreferrer">00:00</a> 準備好了嗎？好的，太棒了。我們這就開始。嗨各位，我是 Den。我是 MCP 的主要維護者（lead maintainer）之一，今天要回顧 MCP 安全性這 2 年，天啊，這週來談安全性真是再適合不過了。我記得很早以前有一篇部落格文章讓我印象特別深刻，上面寫著「MCP 中的 S 代表安全性」。我稍微想了一下。心想，老天，我們在 MCP 安全性上肯定能做得更多，好讓人們別再寫出那種東西。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=35s" target="_blank" rel="noopener noreferrer">00:35</a> 而如果我們回顧 MCP 這不到 2 年的時間，我們實際上做了相當多的努力，我很期待今天能和大家分享。</p>
+<h2 id="sec-2">章節 2：三大支柱：規格、SDK、最佳實務（00:40）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=43s" target="_blank" rel="noopener noreferrer">00:43</a> 那麼，MCP 安全性本身基本上仰賴三大支柱，如果你想這麼稱呼的話。或者說我稱它們為支柱。隨你怎麼稱呼，但基本上首先是協定規格。也就是我們在做的東西。也就是大家看到的有版本控管的規格。我們在 7 月發布了最新版本。明年 3 月還會有更多內容。第二大支柱是 SDK，因為這是開發者實際用來建置的工具。因此，如果你的 SDK 不安全，那問題就大了。第三大支柱，就是要有一套好的最佳實務，說明如何安全地建置 MCP 伺服器。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=78s" target="_blank" rel="noopener noreferrer">01:18</a> 所以，我們今天會簡要討論所有這些內容。大家可能沒注意到的一件事是，當 MCP 最初在 11 月非常早期的規格版本中推出時，</p>
+<h2 id="sec-3">章節 3：早期 MCP 為何把授權交給各開發者（01:23）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=90s" target="_blank" rel="noopener noreferrer">01:30</a> 許多授權邏輯基本上是委派給個別開發者處理的。你可以照自己想要的方式各自發揮。你想要 API 金鑰，就有 API 金鑰。你想要憑證，就可以建置憑證。但這麼做有個挑戰，因為如果你開始擴散這種形形色色的實作方式，突然之間，你就有非常廣泛的對象需要去對接建置，而且很難打造出能夠始終如一執行相同操作的用戶端。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=127s" target="_blank" rel="noopener noreferrer">02:07</a> 因此，在行動裝置上執行的 LLM 用戶端，和在企業內部執行的 LLM 用戶端，行為就會不一樣，你就得加上一堆自訂的東西，這就很不 MCP，因為如果你還沒發現的話，MCP 本身作為一個協定是非常有主見的，而且是刻意的，因為你希望確保一定程度的一致性。你希望全面推動一致性，包括安全性這類層面。因為如果你一致地這麼做，而且對 auth 該怎麼做有自己的主見——順帶一提，我們全都向 OAuth 看齊，將它作為我們在 MCP 安全性或 MCP 身分驗證與授權所做一切的基礎核心，這讓事情變得容易太多了。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=167s" target="_blank" rel="noopener noreferrer">02:47</a> 因為突然之間，你要通訊的所有 MCP 伺服器，無論是你的資料、你的銷售，還是企業內部可能出現的任何人力資源 MCP 伺服器，事情都會再次以相同的方式完成連線。這實際上使我們能夠進行許多創新，你們稍後就會聽到我們與 Okta 等夥伴的合作，我們透過 OAuth 流程建置了許多這類的最佳化，但這一切都取決於 MCP 從一開始就對怎麼做這件事有主見。</p>
+<h2 id="sec-4">章節 4：MCP 為何對安全有主見（03:14）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=194s" target="_blank" rel="noopener noreferrer">03:14</a> 不過，有些地方有沒有主見也許其實沒那麼重要。我是說，你可能會爭辯說這很重要，但如果你是在選擇建置應用程式的語言，或是在選擇架在語言之上的框架，你有很多不同的路可以走。那樣沒問題。你建置 Web 應用程式，可能會使用 Vite、可能會使用 React、也可能會使用 Next.js，而且最後很可能都會達到相同的目的地。但在安全性方面情況就不太一樣了，因為如果你把安全性留給不理解安全性的人去處理，你就會走上一些非常糟糕的道路，</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=231s" target="_blank" rel="noopener noreferrer">03:51</a> 而且因為有人不懂 token 怎麼運作、怎麼儲存、怎麼更新，以及怎麼正確地不把 token 傳到不該傳的地方。因此，當我們從 MCP 的視角來思考安全性時，我們正努力確保大家能被引導至正確的道路上。我認為並非每個人都是資安專家，也不是每個人都想成為資安專家。這也是我從許多與開發者及社群的對話中體認到的一個事實：你有一個問題需要解決。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=263s" target="_blank" rel="noopener noreferrer">04:23</a> 你建置 MCP 伺服器是為了做某件事，不管是下訂單還是追蹤包裹。但歸根究底，你真的在乎要從頭開始建置大量身分驗證與授權的東西嗎？大概不在乎。我覺得……我個人在資安領域做很多事，而我也不想處理這些。所以很自然地，隨著規格演進，從 11 月那一版走到 2025 年 3 月—— 以 AI 的時間來算，那感覺已經像是很久以前了——我們向這個概念看齊，並說：「嘿，也許與其把這些選擇權交給大家，</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=295s" target="_blank" rel="noopener noreferrer">04:55</a> 倒不如讓他們依賴 OAuth 2.1，這是一個以 OAuth 2.0 為基礎的新興標準，再加上一大堆自訂的好東西，讓它稍微更簡單、更安全一點。」當時做的決定大概是：「嗯，你知道 OAuth 需要什麼嗎？你需要一個授權伺服器。而為了讓授權伺服器正確連接到你的 MCP 伺服器，我們會給你一堆事情要做。這包括探索（discovery）、處理登入、單一登入、token 管理，你的授權伺服器和你的 MCP 伺服器會是同一個。」</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=329s" target="_blank" rel="noopener noreferrer">05:29</a> 這同樣是有問題的，因為回到我剛才跟你們分享的原則：你不會想把安全性的事情委派給不想做安全性工作的人，或是不知道該怎麼做安全性工作的人，因為他們會走上錯誤的道路。</p>
+<h2 id="sec-5">章節 5：讓對的事容易、錯的事困難（05:45）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=345s" target="_blank" rel="noopener noreferrer">05:45</a> 那麼，我們要如何確保讓做正確的事變得容易，而讓做錯誤的事變得極度、極度困難？於是 6 月版規格出來了。同樣是去年，我們基本上說：你們知道嗎？與其讓你必須從頭開始實作每一個授權伺服器、處理 token 管理並全部打造出來，不如把這些交給專業人士如何？如果你們是用 Okta 的公司，就用 Okta。如果你是使用 Microsoft 的人，你就會使用 Entra ID。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=377s" target="_blank" rel="noopener noreferrer">06:17</a> 這大幅簡化了協定，因為突然之間你就能夠直接隨插即用。如果你想在企業內部新增授權伺服器，而不需要重新實作一套，你可以直接這麼做。這就是我說的：我們想讓開發者非常容易做對的事，並且難以做錯的事。話雖如此，隨著規格演進，我們關注的其中一件事，也是如何確保我們採用那些比我們更理解這些領域的人所制定的標準。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=409s" target="_blank" rel="noopener noreferrer">06:49</a> 這就是為什麼我們與 OAuth 社群的夥伴合作，邀請他們參與並提出：「嘿，如果我們想要做授權伺服器探索之類的事，最佳的做法是什麼？」果不其然，對此早已有標準存在。因此，我們依賴這些標準。而 MCP，如果你看看現今的授權規格，它基本上就是建立在無數實際上屬於 OAuth 的 RFC 之上。它們不是 MCP 的東西。沒有人是為了 MCP 去打造這些 OAuth 的東西。你打造 OAuth 的東西是因為那是標準。因此，隨著 MCP 演進、規格改變，在每個版本發布中，我們都在讓大家更容易建置它。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=445s" target="_blank" rel="noopener noreferrer">07:25</a> 所以，從 2024 年 11 月我們說「你隨便用什麼、怎麼做都行」，我們變得愈來愈有主見。MCP 是一個有主見的協定，包括授權方面。</p>
+<h2 id="sec-6">章節 6：規模：SDK 與參考伺服器下載達數十億（07:38）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=458s" target="_blank" rel="noopener noreferrer">07:38</a> 現在，這是我基本上在每場主題演講之類的場合都喜歡展示的數字。有人想猜猜看這代表什麼嗎？41.7 億。這是我們的 SDK 與參考伺服器自協定推出以來的累積下載次數。41.7 億。我 9 月才剛在阿姆斯特丹。所以，一個多月前，我們才 30 億。我們在一個多月內就獲得了超過 10 億次下載。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=493s" target="_blank" rel="noopener noreferrer">08:13</a> 那真的非常多。是的。謝謝大家。向社群致敬。但那真的非常多。有了這個數字，這不一定只是我在投影片上隨便秀出來的虛榮指標，而是它實際上為這項協定提出了一個非常重要的重點：我們肩負著重大的責任。因為在這種規模下，任何失誤、任何資安問題、任何缺口，或是有人把自己的 MCP 伺服器設定錯了，代價都很大。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=523s" target="_blank" rel="noopener noreferrer">08:43</a> 所以，協定在 11 月剛推出時，我們從 TypeScript 和 Python 開始，之後就不斷擴張。我們現在有了 Go 的 SDK。還有適用於 Java、Rust 和 C# 的 SDK。你能想到的任何平台，在我們的社群裡都有相對應的 SDK。</p>
+<h2 id="sec-7">章節 7：SDK 安全與協調式漏洞揭露（09:02）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=542s" target="_blank" rel="noopener noreferrer">09:02</a> 而如同我提到的，這項協定的安全性不僅取決於我們向 OAuth 靠攏的協定規格，也取決於這些 SDK。因為那才是開發者真正在使用的東西。開發者社群中沒有人會去看規格、讀規格，然後說：「我要從頭打造一切。」他們會下載套件。並且希望該套件運作良好。因此，我們與維護者社群非常非常努力地合作，以確保每一個 SDK 都有走向安全的路徑。我們有標準的揭露流程。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=572s" target="_blank" rel="noopener noreferrer">09:32</a> 我們共同合作緩解漏洞。我們共同合作協調漏洞處置。因為認識到 SDK 本身並非獨立存在是很重要的。TypeScript SDK 在 GitHub 上，我上次查的時候，大約有將近 30 萬個公開儲存庫依賴它。30 萬，將近 30 萬個套件、應用程式、儀表板。它可能在本地端執行，可能在遠端執行，也可能在某人的伺服器上執行。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=604s" target="_blank" rel="noopener noreferrer">10:04</a> 我們正竭盡所能確保該 SDK 是安全的。Python 也是如此。2.5 萬個套件可不是小數目。那真的非常多。你有 2.5 萬個專案仰賴你把事情做對。這就是為什麼確保我們在資安方面攜手合作，對我們的社群如此重要。這也是為什麼我回到這個想法：我們必須為協調式漏洞揭露之類的事情建立更好的流程，以及如何在它們公開之前修復問題。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=635s" target="_blank" rel="noopener noreferrer">10:35</a> 現在，我們談過了 SDK，也談過了規格。</p>
+<h2 id="sec-8">章節 8：安全最佳實務：同意、token 處理與驗證（10:39）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=639s" target="_blank" rel="noopener noreferrer">10:39</a> 這其中還有第三個組成要素，那就是資安最佳實務。因為你可以給人們規格，你可以給他們 SDK，但最終你還需要為他們提供指引。你需要為他們提供指引，說明如何確保當他們將 MCP 服務部署到正式環境時，不會做出錯誤的事。所以，在過去的 2 年裡，實際上不到 2 年。我一直提到 2 年，但我知道 MCP 是在 2024 年 11 月修訂的。現在還不是 11 月。我們還不到 2 年。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=670s" target="_blank" rel="noopener noreferrer">11:10</a> 但我們看到社群中浮現出許多這類狀況，我們非常非常努力地在各種環境中緩解這些問題，並從社群中吸取經驗。像是引入逐一用戶端同意，因為我們看到當大家將 MCP 服務部署到正式環境時，他們會遇到混淆代理人（confused deputy）的情境，同意了不該同意的東西，而且大家都知道，隨著許多模型能力愈來愈強，你不會想留下任何途徑，讓這當中很多事情被自動化。像 token 直通轉傳（token pass-through）這類的事情。再次強調，必須意識到該如何處理 token，考慮到這點非常非常重要。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=703s" target="_blank" rel="noopener noreferrer">11:43</a> 如果你的 MCP 伺服器就是拿到 token 的那一方，你不會想把這個 token 再傳到別的地方。所以，我們引入了像受眾驗證這類的機制。同樣地——順帶一提，不只是受眾，還有簽發者驗證（issuer validation），用來確保不會發生混淆攻擊（mix-up attack），這是在最近一版規格中推出的。這些大多源自於我們觀察大家如何在正式環境部署 MCP。</p>
+<h2 id="sec-9">章節 9：實際部署的教訓（12:03）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=724s" target="_blank" rel="noopener noreferrer">12:04</a> 這一切都立足於真實世界的實際部署、真實世界的使用情境，以及我們從社群獲得的回饋。所以，如果你正在正式環境部署 MCP 伺服器，請讓我們知道哪些行得通、哪些行不通，特別是在資安方面。所以，這也……我談到的許多最佳實務和環節，都已經融入我們的流程中。當我們設計新的規格內容、設計新的 SEP，也就是規格增強提案（spec enhancement proposals）時，我們現在不只是丟出像是：「嘿，</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=756s" target="_blank" rel="noopener noreferrer">12:36</a> 這裡有些文字讓你們去閱讀並評估是否……像是，我現在正與我們的社群一起進行的其中一件事就是檔案上傳。檔案上傳這件事，如果你真的仔細看，可能是很有風險的操作，因為你突然間就多了一個內容外洩的管道。因此，為此我們必須確保從一開始就徹底考慮資安問題。這是基礎的一環。資安是不可妥協的。這不是事後才考慮的事。不是我們隨規格發布了某個東西，規格發布後才說：「啊，資安。」</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=787s" target="_blank" rel="noopener noreferrer">13:07</a> 它實際上已經融入到我們的流程中。</p>
+<h2 id="sec-10">章節 10：一致性測試：SDK 的契約（13:10）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=790s" target="_blank" rel="noopener noreferrer">13:10</a> 我們現在也藉助一致性測試，把許多這類事情自動化，因為一致性測試讓我們能確保所有 SDK 都做對的事。所以，當我說我們現在有這麼多不同的 SDK 時，重要的是不必靠任何人手動去確認設定是否正確。一致性至關重要。所以，現在當我們有任何提交給某個 SDK 的問題時，例如有人針對 Python 回報了某些問題，我們會在我們擁有的其他 SDK 的整個生態系中協調此事，以確保同一個問題能盡快得到評估並以最快速度做出反應。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=827s" target="_blank" rel="noopener noreferrer">13:47</a> 再次強調，這是整個生態系的事，我們不只專注在單一個 SDK。我們現在也針對像 SDK 一致性之類的事情建立了要求。我一直說一致性算是基礎的一環，但基本上它是一份契約，確保如果有回報資安問題且有影響客戶的重大錯誤時，有明確的預期標準。如果你是 Tier 1（第一等級）的 SDK——順帶一提，我們已經建立了一套等級（tier），規範 SDK 怎麼發布和更新，讓你們</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=857s" target="_blank" rel="noopener noreferrer">14:17</a> 採用者、企業、新創、教育、醫療等各行各業，對如何處理這些 SDK 問題抱有預期。對於資安非常重要。在我們目前大約 116 個一致性情境中，超過三分之一——應該說接近三分之一，沒有超過——實際上是以資安為導向的。授權、授權相關的事務、授權周邊的事項都融入其中，以便當新的 SDK 推出時，</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=888s" target="_blank" rel="noopener noreferrer">14:48</a> 當 SDK 流程引入新的 SEP 時，同樣地，資安都已內建其中。它不是事後才考慮的事。你不會在發布之後才去考慮資安。這點很重要，因為如果我們沒有這種契約，它基本上就只是一項建議。而我們知道建議通常會被忽略。因為你可能無論……你大可以說你絕對應該這麼做，但如果沒有自動化、沒有強制執行的流程，你就永遠無法依賴它。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=919s" target="_blank" rel="noopener noreferrer">15:19</a> 所以這就是為什麼我們非常非常推崇契約，在這種情況下就是 SDK 的一致性測試套件。所以回到我們讓事情更安全的地圖，過去一年半以來我們一直在建立這些。現在 OAuth 2.1 的整套內容都有妥善的支援。我們有良好的資安文件。我們有良好的漏洞回報機制。我們在各 SDK 之間協調。我們有一致性。但還有什麼？</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=949s" target="_blank" rel="noopener noreferrer">15:49</a> 我們其實還沒完成。</p>
+<h2 id="sec-11">章節 11：面對 agent，同意機制為何得改變（15:52）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=952s" target="_blank" rel="noopener noreferrer">15:52</a> 我們還沒完成，是因為自從 MCP、第一版 MCP 規格發布以來，世界已經改變了。當 MCP 處於起步階段時，大致的假設是電腦前會有一個人去點擊按鈕。你會有人同意登入提示。你需要存取你的 Gmail 帳號。他們會點擊核准。那樣沒問題。那樣運作得相當好。但這已經不太能擴展了。因為突然之間，正如各位今天早上在稍早 David Sarratt 那場主題演講中看到的，</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=990s" target="_blank" rel="noopener noreferrer">16:30</a> 模型開始運作的範疇變得廣大得多。而這在實務上意味著，不會再有一個人去點擊那個按鈕來同意某件事。而這在實務上意味著，你需要一種更好的方式來同意各項事務，無論是存取你的 Gmail 帳號，還是對你的銷售資料進行操作。也許它需要排程某件事，或是從雲端某處的某個資料儲存區拉資料。所以，為此我們思考了到底缺少了什麼？而針對這些，這裡有 4 個關鍵組件。</p>
+<h2 id="sec-12">章節 12：企業託管授權（17:00）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1025s" target="_blank" rel="noopener noreferrer">17:05</a> 其中一個是我們今年稍早推出的，也就是企業託管授權（enterprise-managed authorization）。我們與 Okta 的夥伴進行了合作。這基本上讓任何想連線到 MCP 的使用者——順帶一提，這項功能今天已經在 Claude 上線—— 你只要連線你的 MCP 伺服器一次（你的管理者會處理這件事），之後組織中的任何人都永遠不會看到同意提示。超級強大。你永遠不必擔心有人不小心連線了自己的個人 Gmail 帳號，並讓他們的 AI 用戶端把東西傳進那個收件匣。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1060s" target="_blank" rel="noopener noreferrer">17:40</a> 我們也正在做更多擴充，例如 DPoP（demonstrating proof of possession，持有證明）、工作負載身分聯邦（workload identity federation），以及其中我其實最興奮的一個，叫做 WAG，也就是 workload authorization grant（工作負載授權授予），由我們的同事 Paul Carleton 在推動。前面我談到了企業託管授權，也就是 EMA。你可能會聽到不同的稱呼方式。可能是 EMA、ID-JAG、XAA，但它正是我剛才所描述的。你有一個像 Okta 這樣的企業 IDP，基本上會聯邦化許多連線，然後你的使用者就不需要登入超過一次。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1093s" target="_blank" rel="noopener noreferrer">18:13</a> 順帶一提，我在這張圖上寫的是員工，但這其實同樣適用於 agent。各個 agent 也會做同樣的事。</p>
+<h2 id="sec-13">章節 13：DPoP：把 token 綁定到裝置（18:21）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1101s" target="_blank" rel="noopener noreferrer">18:21</a> 另一個是 DPoP，也就是持有證明（demonstrating proof of possession），這點至關重要，因為正如各位從持有者 token 的概念中所知，token 本質上是與持有者關聯的。由某個人持有它。問題在於，如果你有許多服務，到處都漂浮著這些 token，有人就能輕易將其竊取外洩。如果有人拿到了可存取你 Gmail 收件匣或財務資料的 token，那可就是個問題了。DPoP 實際上是透過一些輕量密碼學來幫你綁定 token。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1135s" target="_blank" rel="noopener noreferrer">18:55</a> 我先大致帶過細節就好。讓 token 綁定到裝置上。所以如果你的裝置有信賴平台模組（TPM）晶片，就會用它來產生私密金鑰、簽署 token，接著即使攻擊者稍後拿到了該 token，也無法使用。這對 MCP 來說非常重要，因為 MCP 可以在任何環境中執行。</p>
+<h2 id="sec-14">章節 14：工作負載身分聯邦（19:16）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1158s" target="_blank" rel="noopener noreferrer">19:18</a> 工作負載身分聯邦很有意思，因為隨著 MCP 被部署在眾多不同的服務機群中，你可能在 GCP 的 Kubernetes 叢集中執行，也可能在 Azure 或 AWS 中執行。你通常如何給予那些伺服器、MCP 伺服器或基礎架構憑證？是 API 金鑰，也可能是像用戶端 ID 與用戶端密鑰這類用來執行操作的用戶端憑證。可能在某個地方有一個 HashiCorp Vault 來儲存這些憑證，並期望它是安全的。然後有一天有人攻破了 Vault，接著你所有的金鑰都被竊取外洩了。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1193s" target="_blank" rel="noopener noreferrer">19:53</a> 這同樣也是個問題。所以，工作負載身分聯邦基本上讓你可以說，你的雲端供應商、你的平台，也就是你的服務不管在哪裡執行的底層基礎，都會提供該平台的身分，供你的服務使用——也就是讓身為 MCP 伺服器的工作負載來識別自身，接著使用那些短期憑證。這裡的關鍵是短期有效。即使有人攔截了它，能使用的時間也非常有限。接著再用它為下游服務產生其他 token。</p>
+<h2 id="sec-15">章節 15：工作負載授權授予與 agent 身分（20:25）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1225s" target="_blank" rel="noopener noreferrer">20:25</a> 我前面提到工作負載授權授予（WAG）算是這裡比較重要的部分之一，而它其實也是我們現在認為通往 agent 身分的那條路。我們已經在 Claude Tag 中採用了它。Claude Tag 是我們在 Slack 裡面執行的 agent。它允許 agent 向下游服務識別自身身分，無論是 SaaS 服務還是你自己的基礎架構。所以，如果在過去你有一個需要執行某些操作的 agent 平台，你會如何給它憑證？</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1255s" target="_blank" rel="noopener noreferrer">20:55</a> 大概會有人以自己的身分登入並說：「噢對，沒問題。我是 Den，拿我的 token 去做事吧。」或者他們同樣會使用靜態憑證。那樣無法擴展。在 agent 領域肯定行不通，因為你現在有 agent 在許多不同的環境中執行這麼多的任務。在這種情況下，WAG 正在建構——它在某種程度上呼應了 WIF 與 ID-JAG 的許多概念。實際上它也建立在 OAuth 的許多概念之上。還記得我說過我們試著不重新發明輪子，並確保 MCP 使用 OAuth 標準嗎？</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1287s" target="_blank" rel="noopener noreferrer">21:27</a> 就是這個了。WAG 將會成為一個給予 agent 專屬身分的真正 OAuth 標準。不只如此，他們還會把一些東西內建到 agent 裡，讓你能針對 agent 做什麼來做政策決策。所以 Claude Tag——是我的團隊在打造的——實際上就是用這個來識別 agent，並嵌入宣告（claims），內容包括你的 Slack 工作區、頻道。這樣一來，如果你接收到一個 agent，你就會知道該 agent 是在哪裡操作或正嘗試做什麼。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1317s" target="_blank" rel="noopener noreferrer">21:57</a> 這表示你會為該 agent 取得一個短期 token，然後你的服務就能在此基礎上做出授權決策，完全清楚該 agent 是什麼。</p>
+<h2 id="sec-16">章節 16：從人在迴圈中到 agent（22:07）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1327s" target="_blank" rel="noopener noreferrer">22:07</a> 因此，說了這麼多我們正嘗試打造的這一切，整體目標在於，MCP 正在從人在迴圈中的時代走向 agent 的時代。而各位今天正在設計的許多 MCP 伺服器、未來會設計的許多 MCP 伺服器，會愈來愈多被 agent 所使用，我們正在努力為此最佳化。所以，如果該流程中有任何問題、不直覺的地方，或任何你覺得沒有幫助的地方，請告訴我們。</p>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1358s" target="_blank" rel="noopener noreferrer">22:38</a> 我們是一個非常開放的社群。我們在 Discord 上。</p>
+<h2 id="sec-17">章節 17：社群、Discord 與漏洞回報（22:42）</h2>
+<p><a href="https://www.youtube.com/watch?v=b0v2zCLOdcM&amp;t=1362s" target="_blank" rel="noopener noreferrer">22:42</a> 我們會將所有內容公開發布在網路上。你可以造訪我們的網站 modelcontextprotocol.io。你會找到我們的 Discord 連結。你會找到我們的資安最佳實務。如果你發現了漏洞，請回報給我們。你也會找到我們的一致性測試套件，說明我們究竟如何將許多這類決策綁定到 SDK。那麼，就分享到這裡，非常感謝大家，如果有任何問題，我會在議程結束後留下來回答。</p>
+</article></main>
+<footer>
+<p>本頁為非官方繁體中文翻譯，由 AI 模型翻譯（agy）與審校（Claude Opus），依 YouTube 機器字幕，未經人工校稿、未對照原音；原文版權屬原講者與頻道，僅供閱讀與研究。若有出入，以原影片為準。</p>
+</footer>
+</div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="圖片放大檢視"><button type="button" aria-label="關閉放大檢視">關閉（Esc）</button><img src="" alt=""></div>
+<script>
+(function(){
+  var box=document.getElementById('lightbox'), big=box.querySelector('img'), btn=box.querySelector('button'), last=null;
+  function open(img){last=img;big.src=img.currentSrc||img.src;big.alt=img.alt;box.classList.add('is-open');btn.focus();}
+  function close(){box.classList.remove('is-open');big.removeAttribute('src');if(last){last.focus();}}
+  document.querySelectorAll('figure img').forEach(function(img){
+    img.addEventListener('click',function(){open(img);});
+    img.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(img);}});
+  });
+  box.addEventListener('click',function(e){if(e.target===box||e.target===btn){close();}});
+  document.addEventListener('keydown',function(e){
+    if(!box.classList.contains('is-open'))return;
+    if(e.key==='Escape'){close();}
+    if(e.key==='Tab'){e.preventDefault();btn.focus();}
+  });
+})();
+</script>
+</body>
+</html>
